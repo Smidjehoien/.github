@@ -1,0 +1,54 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>mIRCat — UI mock (no crypto)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">mIRCat</div>
+      <div class="subtitle">UI mock · offline · no crypto</div>
+      <div class="spacer"></div>
+      <div class="theme-toggle" title="Toggle theme" role="button" tabindex="0">🎨</div>
+    </header>
+
+    <main class="layout">
+      <aside class="channels" aria-label="Channels">
+        <div class="panel-title">Channels</div>
+        <ul id="channel-list" class="list"></ul>
+      </aside>
+
+      <section class="chat" aria-label="Chat log">
+        <div class="room-header">
+          <div id="room-name" class="room-name">#general</div>
+          <div class="room-flags" title="Lock is decorative in this UI-only mock">
+            <span class="lock lock-off" aria-label="encryption off" title="UI-only: no encryption">🔓</span>
+            <span class="mock-note">UI-only</span>
+          </div>
+        </div>
+        <div id="log" class="log" aria-live="polite"></div>
+        <form id="composer" class="composer" autocomplete="off">
+          <input id="input" class="input" type="text" placeholder="Type a message… (Enter to send)" aria-label="Message input" />
+        </form>
+      </section>
+
+      <aside class="users" aria-label="Users">
+        <div class="panel-title">Users</div>
+        <ul id="user-list" class="list"></ul>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <small>
+        This is a visual prototype only. No networking. No encryption. No storage. Please avoid secrets or personal data.
+      </small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
