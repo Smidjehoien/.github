@@ -10,6 +10,7 @@
   const inputEl = $('#input');
   const roomNameEl = $('#room-name');
   const themeToggleEl = document.querySelector('.theme-toggle');
+  const readingToggleEl = document.querySelector('.reading-toggle');
 
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
@@ -53,10 +54,24 @@
   });
 
   // Theme toggle
-  themeToggleEl.addEventListener('click', () => document.body.classList.toggle('light'));
-  themeToggleEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') document.body.classList.toggle('light');
+  themeToggleEl.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    reflectPressed(themeToggleEl, document.body.classList.contains('light'));
   });
+
+  // Reading mode (dyslexia-friendly) — typography only; no storage
+  readingToggleEl.addEventListener('click', () => {
+    document.body.classList.toggle('reading-mode');
+    reflectPressed(readingToggleEl, document.body.classList.contains('reading-mode'));
+  });
+  
+  // Sync ARIA pressed states with initial classes
+  reflectPressed(themeToggleEl, document.body.classList.contains('light'));
+  reflectPressed(readingToggleEl, document.body.classList.contains('reading-mode'));
+
+  function reflectPressed(el, on) {
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
 
   function currentChannel() {
     const active = channelListEl.querySelector('li.active');

@@ -10,6 +10,7 @@ How to run
 
 1. Open `index.html` directly in your browser (double-click it).
 2. Click channels on the left. Type in the input at the bottom and press Enter to add a message.
+3. Use the “Reading mode” button in the top bar for a dyslexia‑friendly typographic mode (larger line height, gentle spacing, no italics). It resets on reload.
 
 Notes
 
