@@ -1,0 +1,41 @@
+name: PR poetry (optional)
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  pull-requests: write
+
+env:
+  # Probability for posting a haiku comment on a PR event.
+  # Override by setting repository variable PR_POETRY_P (e.g., 0.05 for 5%).
+  PR_POETRY_P: ${{ (vars.PR_POETRY_P != '' && vars.PR_POETRY_P) || '0.13' }}
+
+jobs:
+  maybe-haiku:
+    if: ${{ vars.ENABLE_PR_POETRY == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: roll
+        name: Roll a random number
+        shell: bash
+        run: |
+          echo "roll=$(node -p 'Math.random()')" >> "$GITHUB_OUTPUT"
+
+      - name: Haiku (maybe)
+        if: ${{ fromJSON(steps.roll.outputs.roll) < fromJSON(env.PR_POETRY_P) }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              'Tiny tests whisper,',
+              'labels settle into place—',
+              'merge when logs are calm.'
+            ].join('\n')
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            })
