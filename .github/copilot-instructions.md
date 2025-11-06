@@ -78,8 +78,9 @@ Always comply with `ETHICS.md`:
 ## CLA Workflows
 
 This repository provides CLA (Contributor License Agreement) marking workflows:
-- Main workflow: `cla.yml` (caller, in root directory)
 - Reusable workflow: `.github/workflows/cla-mark.yml` (implementation)
+- Active workflow caller: `.github/workflows/cla.yml` (uses the reusable workflow)
+- Example caller: `cla.yml` (root directory) and `workflows/cla.ylm` (example with typo)
 - Labels: "CLA: covered" and "CLA: review"
 - Supports allowlisting users and treating org members/collaborators as covered
 
