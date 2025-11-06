@@ -78,8 +78,8 @@ Always comply with `ETHICS.md`:
 ## CLA Workflows
 
 This repository provides CLA (Contributor License Agreement) marking workflows:
-- Main workflow: `cla.yml` (caller)
-- Reusable workflow: `cla-mark.yml` (implementation)
+- Main workflow: `cla.yml` (caller, in root directory)
+- Reusable workflow: `.github/workflows/cla-mark.yml` (implementation)
 - Labels: "CLA: covered" and "CLA: review"
 - Supports allowlisting users and treating org members/collaborators as covered
 
@@ -87,16 +87,16 @@ This repository provides CLA (Contributor License Agreement) marking workflows:
 
 ```
 .github/
-  workflows/          # Reusable GitHub Actions workflows
+  workflows/          # Active GitHub Actions workflows (reusable)
   PULL_REQUEST_TEMPLATE.md
   copilot-instructions.md (this file)
 examples/             # Example projects and mockups
-workflows/            # Workflow configuration examples
+workflows/            # Example workflow configuration files
 ETHICS.md            # Ethics and responsible use policy
 LICENSE              # MPL-2.0 license
 LISANCE.txt          # Joy-sensitive licensing document
 README.md            # Creative repository introduction
-cla.yml              # CLA workflow configuration
+cla.yml              # CLA workflow caller configuration
 ```
 
 ## Pull Request Guidelines
