@@ -94,8 +94,10 @@ jobs:
             }
 
             if (createMissing) {
-              await ensureLabel(labelCovered, '2ea44f', 'Contributor License Agreement is considered covered');
-              await ensureLabel(labelReview, '9a9a9a', 'CLA status requires manual review');
+              await Promise.all([
+                ensureLabel(labelCovered, '2ea44f', 'Contributor License Agreement is considered covered'),
+                ensureLabel(labelReview, '9a9a9a', 'CLA status requires manual review')
+              ]);
             }
 
             // Remove the opposite label if present, then add the desired one

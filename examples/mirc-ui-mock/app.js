@@ -13,9 +13,10 @@
 
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
+  const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
   const nickColorClass = (nick) => {
     const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'][idx];
+    return nickColors[idx];
   };
 
   // Simple hash for color bucketing
@@ -144,7 +145,8 @@
     logEl.scrollTop = logEl.scrollHeight;
   }
 
+  const htmlEscapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
   function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return s.replace(/[&<>"']/g, (c) => htmlEscapeMap[c]);
   }
 })();
