@@ -13,7 +13,7 @@
 
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
-  const nicknameColorClasses = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
+  const nicknameColorClasses = ['nick-a', 'nick-b', 'nick-c', 'nick-d', 'nick-e', 'nick-f'];
   const getNicknameColorClass = (nickname) => {
     const colorIndex = Math.abs(computeStringHash(nickname)) % 6; // 0..5
     return nicknameColorClasses[colorIndex];
@@ -22,7 +22,9 @@
   // Simple hash for color bucketing
   function computeStringHash(inputString) {
     let hashValue = 0;
-    for (let charIndex = 0; charIndex < inputString.length; charIndex++) hashValue = ((hashValue << 5) - hashValue + inputString.charCodeAt(charIndex)) | 0;
+    for (let charIndex = 0; charIndex < inputString.length; charIndex++) {
+      hashValue = ((hashValue << 5) - hashValue + inputString.charCodeAt(charIndex)) | 0;
+    }
     return hashValue;
   }
 
@@ -145,7 +147,13 @@
     chatLogElement.scrollTop = chatLogElement.scrollHeight;
   }
 
-  const htmlEscapeCharacterMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const htmlEscapeCharacterMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
   function escapeHtml(inputString) {
     return inputString.replace(/[&<>"']/g, (character) => htmlEscapeCharacterMap[character]);
   }
