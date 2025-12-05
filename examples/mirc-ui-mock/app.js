@@ -1,152 +1,152 @@
 /* SPDX-License-Identifier: MPL-2.0 */
 // mIRCat UI-only mock — no networking, no crypto. All state is in-memory.
 (function () {
-  const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const selectElement = (selector) => document.querySelector(selector);
+  const selectAllElements = (selector) => Array.from(document.querySelectorAll(selector));
 
-  const channelListEl = $('#channel-list');
-  const userListEl = $('#user-list');
-  const logEl = $('#log');
-  const inputEl = $('#input');
-  const roomNameEl = $('#room-name');
-  const themeToggleEl = document.querySelector('.theme-toggle');
+  const channelListElement = selectElement('#channel-list');
+  const userListElement = selectElement('#user-list');
+  const chatLogElement = selectElement('#log');
+  const messageInputElement = selectElement('#input');
+  const roomNameElement = selectElement('#room-name');
+  const themeToggleElement = document.querySelector('.theme-toggle');
 
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
-  const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
-  const nickColorClass = (nick) => {
-    const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return nickColors[idx];
+  const nicknameColorClasses = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
+  const getNicknameColorClass = (nickname) => {
+    const colorIndex = Math.abs(computeStringHash(nickname)) % 6; // 0..5
+    return nicknameColorClasses[colorIndex];
   };
 
   // Simple hash for color bucketing
-  function hash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    return h;
+  function computeStringHash(inputString) {
+    let hashValue = 0;
+    for (let charIndex = 0; charIndex < inputString.length; charIndex++) hashValue = ((hashValue << 5) - hashValue + inputString.charCodeAt(charIndex)) | 0;
+    return hashValue;
   }
 
   // In-memory message store per channel
   /** @type {Record<string, {time:number,nick:string,text:string}[]>} */
-  const store = Object.fromEntries(
-    channels.map((c) => [c, []])
+  const messageStore = Object.fromEntries(
+    channels.map((channelName) => [channelName, []])
   );
 
   // Seed a few messages in #general
-  push('#general', 'alice', 'hello world');
-  push('#general', 'bob', 'hi!');
-  push('#general', 'you', '/join #cozy-outpost');
+  addMessageToChannel('#general', 'alice', 'hello world');
+  addMessageToChannel('#general', 'bob', 'hi!');
+  addMessageToChannel('#general', 'you', '/join #cozy-outpost');
 
-  renderChannels('#general');
-  renderUsers(users);
-  switchChannel('#general');
+  renderChannelList('#general');
+  renderUserList(users);
+  switchToChannel('#general');
 
   // Event: send message on Enter
-  $('#composer').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const val = inputEl.value.trim();
-    if (!val) return;
-    const chan = currentChannel();
-    push(chan, 'you', val);
-    inputEl.value = '';
-    renderLog(chan);
-    scrollLogToBottom();
+  selectElement('#composer').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const messageText = messageInputElement.value.trim();
+    if (!messageText) return;
+    const currentChannelName = getCurrentChannel();
+    addMessageToChannel(currentChannelName, 'you', messageText);
+    messageInputElement.value = '';
+    renderChatLog(currentChannelName);
+    scrollChatLogToBottom();
   });
 
   // Theme toggle
-  themeToggleEl.addEventListener('click', () => document.body.classList.toggle('light'));
-  themeToggleEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') document.body.classList.toggle('light');
+  themeToggleElement.addEventListener('click', () => document.body.classList.toggle('light'));
+  themeToggleElement.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') document.body.classList.toggle('light');
   });
 
-  function currentChannel() {
-    const active = channelListEl.querySelector('li.active');
-    return active?.dataset.value ?? '#general';
+  function getCurrentChannel() {
+    const activeChannelElement = channelListElement.querySelector('li.active');
+    return activeChannelElement?.dataset.value ?? '#general';
   }
 
-  function renderChannels(active) {
-    channelListEl.innerHTML = '';
-    channels.forEach((c) => {
-      const li = document.createElement('li');
-      li.dataset.value = c;
-      if (c === active) li.classList.add('active');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = c;
-      btn.addEventListener('click', () => switchChannel(c));
-      li.appendChild(btn);
-      channelListEl.appendChild(li);
+  function renderChannelList(activeChannel) {
+    channelListElement.innerHTML = '';
+    channels.forEach((channelName) => {
+      const listItem = document.createElement('li');
+      listItem.dataset.value = channelName;
+      if (channelName === activeChannel) listItem.classList.add('active');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = channelName;
+      button.addEventListener('click', () => switchToChannel(channelName));
+      listItem.appendChild(button);
+      channelListElement.appendChild(listItem);
     });
   }
 
-  function renderUsers(nicks) {
-    userListEl.innerHTML = '';
-    nicks.forEach((n) => {
-      const li = document.createElement('li');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.innerHTML = `<span class="${nickColorClass(n)}">${escapeHtml(n)}</span>`;
-      li.appendChild(btn);
-      userListEl.appendChild(li);
+  function renderUserList(nicknames) {
+    userListElement.innerHTML = '';
+    nicknames.forEach((nickname) => {
+      const listItem = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.innerHTML = `<span class="${getNicknameColorClass(nickname)}">${escapeHtml(nickname)}</span>`;
+      listItem.appendChild(button);
+      userListElement.appendChild(listItem);
     });
   }
 
-  function switchChannel(chan) {
+  function switchToChannel(channelName) {
     // update active UI
-    $$('#channel-list li').forEach((li) => {
-      li.classList.toggle('active', li.dataset.value === chan);
+    selectAllElements('#channel-list li').forEach((listItem) => {
+      listItem.classList.toggle('active', listItem.dataset.value === channelName);
     });
-    roomNameEl.textContent = chan;
-    renderLog(chan);
-    scrollLogToBottom();
+    roomNameElement.textContent = channelName;
+    renderChatLog(channelName);
+    scrollChatLogToBottom();
   }
 
-  function renderLog(chan) {
-    const msgs = store[chan] ?? [];
-    logEl.innerHTML = '';
-    msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+  function renderChatLog(channelName) {
+    const messages = messageStore[channelName] ?? [];
+    chatLogElement.innerHTML = '';
+    messages.forEach((message) => chatLogElement.appendChild(renderMessage(message)));
   }
 
-  function renderMsg(m) {
-    const row = document.createElement('div');
-    row.className = 'msg';
-    const time = document.createElement('div');
-    const hh = new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    time.className = 'time';
-    time.textContent = hh;
-    const body = document.createElement('div');
-    const nick = document.createElement('span');
-    nick.className = `nick ${nickColorClass(m.nick)}`;
-    nick.textContent = padNick(m.nick);
-    const text = document.createElement('span');
-    text.className = 'text';
-    text.textContent = m.text;
-    body.appendChild(nick);
-    body.appendChild(document.createTextNode(': '));
-    body.appendChild(text);
-    row.appendChild(time);
-    row.appendChild(body);
-    return row;
+  function renderMessage(messageData) {
+    const messageRow = document.createElement('div');
+    messageRow.className = 'msg';
+    const timeElement = document.createElement('div');
+    const formattedTime = new Date(messageData.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    timeElement.className = 'time';
+    timeElement.textContent = formattedTime;
+    const bodyElement = document.createElement('div');
+    const nicknameElement = document.createElement('span');
+    nicknameElement.className = `nick ${getNicknameColorClass(messageData.nick)}`;
+    nicknameElement.textContent = padNickname(messageData.nick);
+    const textElement = document.createElement('span');
+    textElement.className = 'text';
+    textElement.textContent = messageData.text;
+    bodyElement.appendChild(nicknameElement);
+    bodyElement.appendChild(document.createTextNode(': '));
+    bodyElement.appendChild(textElement);
+    messageRow.appendChild(timeElement);
+    messageRow.appendChild(bodyElement);
+    return messageRow;
   }
 
-  function padNick(n) {
+  function padNickname(nickname) {
     // mimic fixed-width nick column feel
-    const max = 8; // simple pad for aesthetics
-    if (n.length >= max) return n.slice(0, max);
-    return (n + ' '.repeat(max)).slice(0, max);
+    const maxLength = 8; // simple pad for aesthetics
+    if (nickname.length >= maxLength) return nickname.slice(0, maxLength);
+    return (nickname + ' '.repeat(maxLength)).slice(0, maxLength);
   }
 
-  function push(chan, nick, text) {
-    const arr = store[chan] || (store[chan] = []);
-    arr.push({ time: Date.now(), nick, text });
+  function addMessageToChannel(channelName, nickname, messageText) {
+    const channelMessages = messageStore[channelName] || (messageStore[channelName] = []);
+    channelMessages.push({ time: Date.now(), nick: nickname, text: messageText });
   }
 
-  function scrollLogToBottom() {
-    logEl.scrollTop = logEl.scrollHeight;
+  function scrollChatLogToBottom() {
+    chatLogElement.scrollTop = chatLogElement.scrollHeight;
   }
 
-  const htmlEscapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => htmlEscapeMap[c]);
+  const htmlEscapeCharacterMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  function escapeHtml(inputString) {
+    return inputString.replace(/[&<>"']/g, (character) => htmlEscapeCharacterMap[character]);
   }
 })();
