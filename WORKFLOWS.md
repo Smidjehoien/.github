@@ -15,7 +15,7 @@ Responds to greetings in issues and comments with BLEKKSPRUT-style welcome messa
 
 ### What it does
 
-- Detects greetings like "hi", "hello", "hey", "8)", "👋" in issue titles or bodies
+- Detects greetings like "hi", "hello", "hey", "8)", "👋" in issue titles, bodies, or comments
 - Responds with one of five randomly selected friendly messages
 - Messages maintain the repository's philosophical and creative tone
 
@@ -75,7 +75,7 @@ Checks for WIP, fixup, or squash markers in PR titles and commits.
 
 ### What it checks
 
-- PR title for: `WIP`, `fixup!`, or `squash!`
+- PR title for: `WIP` (as a whole word), `fixup!`, or `squash!`
 - Commit messages for the same markers
 - Reports findings in the workflow summary
 - Fails the workflow if markers are found (but continues on error)

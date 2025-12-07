@@ -27,12 +27,12 @@ jobs:
             const title = context.payload.issue?.title || '';
             const text = (title + ' ' + body).toLowerCase();
 
-            // Detect greetings
-            const greetings = /\b(hi|hello|hey|greetings|howdy|hiya|sup)\b/i;
+            // Detect greeting patterns
+            const greetingWords = /\b(hi|hello|hey|greetings|howdy|hiya|sup)\b/i;
             const sunglasses = /8\)/;
             const wave = /👋|:wave:/;
 
-            const isGreeting = greetings.test(text) || sunglasses.test(text) || wave.test(text);
+            const isGreeting = greetingWords.test(text) || sunglasses.test(text) || wave.test(text);
 
             if (!isGreeting) {
               core.info('No greeting detected, tentacle remains coiled.');
