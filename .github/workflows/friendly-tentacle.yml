@@ -18,27 +18,27 @@ jobs:
         with:
           script: |
             const core = require('@actions/core');
-            
+
             // Get the issue body or comment body
-            const body = (context.eventName === 'issues' 
-              ? context.payload.issue?.body 
+            const body = (context.eventName === 'issues'
+              ? context.payload.issue?.body
               : context.payload.comment?.body) || '';
-            
+
             const title = context.payload.issue?.title || '';
             const text = (title + ' ' + body).toLowerCase();
-            
+
             // Detect greetings
             const greetings = /\b(hi|hello|hey|greetings|howdy|hiya|sup)\b/i;
             const sunglasses = /8\)/;
             const wave = /👋|:wave:/;
-            
+
             const isGreeting = greetings.test(text) || sunglasses.test(text) || wave.test(text);
-            
+
             if (!isGreeting) {
               core.info('No greeting detected, tentacle remains coiled.');
               return;
             }
-            
+
             // Array of friendly responses in BLEKKSPRUT style
             const responses = [
               'Hello, traveler! 🐙\n\nThe tentacles sense your presence. Welcome to the depths of BLEKKSPRUT.\n\n> _Ink gently. Code with personality._',
@@ -47,19 +47,19 @@ jobs:
               'Hi! 🌊\n\nYou've entered a space where code glows faintly when no one is looking.\n\n> _BLEKKSPRUT does not exist to be cloned. It exists to be experienced._',
               'Howdy! 🐙✨\n\nThe octopus stirs. Your greeting echoes through the repository's concentric truths.\n\n> _Push bravely. Merge only when the stars align._'
             ];
-            
+
             // Select a random response
             const response = responses[Math.floor(Math.random() * responses.length)];
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: response
             });
-            
+
             core.info('Friendly tentacle extended! 🐙');
-            
+
             core.summary
               .addHeading('Friendly Tentacle')
               .addList(['Detected a greeting', 'Extended a tentacle in friendship'])
