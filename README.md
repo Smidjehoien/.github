@@ -19,6 +19,11 @@ What it **is**:
 - `cla.yml` – Marks the line between chaos and contribution.
 - `examples/` – Things that almost make sense.
 - `workflows/` – Machines that don’t ask permission to run.
+  - `friendly-tentacle.yml` – Extends a tentacle in greeting when you say hi.
+  - `pr-poetry.yml` – Sometimes whispers haikus on your pull requests.
+  - `astral-clearance.yml` – Summons extra review powers with `/astral`.
+  - `library-cat.yml` – Watches for WIP commits with quiet vigilance.
+  - `cla-mark.yml` – The reusable CLA marker, gentle but firm.
 
 ## Usage
 

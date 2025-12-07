@@ -84,6 +84,14 @@ This repository provides CLA (Contributor License Agreement) marking workflows:
 - Labels: "CLA: covered" and "CLA: review"
 - Supports allowlisting users and treating org members/collaborators as covered
 
+## Optional Personality Workflows
+
+These workflows add character and helpful automation (disabled by default, enable with repository variables):
+- `friendly-tentacle.yml` – Responds to greetings in issues/comments with BLEKKSPRUT-style welcomes
+- `pr-poetry.yml` – Occasionally posts haikus on pull requests (configurable probability)
+- `astral-clearance.yml` – Allows members to toggle "needs_astral_clearance" label via `/astral` command
+- `library-cat.yml` – Checks for WIP/fixup/squash markers in PR titles and commits
+
 ## File Structure
 
 ```
