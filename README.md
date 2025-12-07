@@ -16,6 +16,7 @@ What it **is**:
 
 - `ETHICS.md` – You should read this first. Or last. Or just feel it.
 - `LISANCE.txt` – For systems that reject the cold logic of traditional licensing.
+- `WORKFLOWS.md` – Detailed guide to all workflows and how to enable them.
 - `cla.yml` – Marks the line between chaos and contribution.
 - `examples/` – Things that almost make sense.
 - `workflows/` – Machines that don’t ask permission to run.
