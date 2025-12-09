@@ -67,7 +67,20 @@ body {
 }
 .topbar .subtitle { color: var(--muted); }
 .topbar .spacer { flex: 1; }
-.topbar .theme-toggle { cursor: pointer; }
+.topbar .theme-toggle, .topbar .reading-toggle {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+.topbar .theme-toggle:focus, .topbar .reading-toggle:focus {
+  /* visible fallback focus */
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  /* enhance where supported */
+  border-color: var(--accent);
+  border-color: color-mix(in hsl, var(--accent) 50%, transparent);
+}
 
 .layout {
   display: grid;
@@ -178,4 +191,28 @@ body {
 @media (max-width: 840px) {
   .layout { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
   .channels, .users { display: none; }
+}
+
+/* Reading mode (dyslexia-friendly): toggled on <body class="reading-mode"> */
+.reading-mode {
+  /* Typography */
+  font-size: 16px;           /* slightly larger base size */
+  line-height: 1.6;          /* more breathing room */
+  letter-spacing: 0.02em;    /* gentle letter spacing */
+  word-spacing: 0.06em;      /* gentle word spacing */
+  font-variant-ligatures: none;
+  text-align: left;
+}
+.reading-mode em, .reading-mode i { font-style: normal; }
+.reading-mode a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+.reading-mode .log, .reading-mode #input { font-size: 1rem; line-height: 1.6; }
+.reading-mode .panel-title { letter-spacing: 0.01em; }
+
+/* High-visibility focus for both toggles when reading mode is on */
+.reading-mode .theme-toggle:focus, .reading-mode .reading-toggle:focus {
+  border-color: var(--accent);
 }
