@@ -85,7 +85,10 @@
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.innerHTML = `<span class="${nickColorClass(n)}">${escapeHtml(n)}</span>`;
+      const span = document.createElement('span');
+      span.className = nickColorClass(n);
+      span.textContent = n;
+      btn.appendChild(span);
       li.appendChild(btn);
       userListEl.appendChild(li);
     });
@@ -145,8 +148,5 @@
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  const htmlEscapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => htmlEscapeMap[c]);
-  }
+
 })();
