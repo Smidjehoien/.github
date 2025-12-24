@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: MPL-2.0 */
 // mIRCat UI-only mock — no networking, no crypto. All state is in-memory.
 (function () {
-  const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
   const channelListEl = $('#channel-list');
   const userListEl = $('#user-list');
@@ -15,21 +15,21 @@
   const users = ['alice', 'bob', 'carol', 'dave'];
   const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
   const nickColorClass = (nick) => {
-    const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return nickColors[idx];
+    const index = Math.abs(hash(nick)) % 6; // 0..5
+    return nickColors[index];
   };
 
   // Simple hash for color bucketing
   function hash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    return h;
+    let hashValue = 0;
+    for (let i = 0; i < str.length; i++) hashValue = ((hashValue << 5) - hashValue + str.charCodeAt(i)) | 0;
+    return hashValue;
   }
 
   // In-memory message store per channel
   /** @type {Record<string, {time:number,nick:string,text:string}[]>} */
   const store = Object.fromEntries(
-    channels.map((c) => [c, []])
+    channels.map((channel) => [channel, []])
   );
 
   // Seed a few messages in #general
@@ -44,12 +44,12 @@
   // Event: send message on Enter
   $('#composer').addEventListener('submit', (e) => {
     e.preventDefault();
-    const val = inputEl.value.trim();
-    if (!val) return;
-    const chan = currentChannel();
-    push(chan, 'you', val);
+    const inputValue = inputEl.value.trim();
+    if (!inputValue) return;
+    const channel = currentChannel();
+    push(channel, 'you', inputValue);
     inputEl.value = '';
-    renderLog(chan);
+    renderLog(channel);
     scrollLogToBottom();
   });
 
@@ -66,14 +66,14 @@
 
   function renderChannels(active) {
     channelListEl.innerHTML = '';
-    channels.forEach((c) => {
+    channels.forEach((channel) => {
       const li = document.createElement('li');
-      li.dataset.value = c;
-      if (c === active) li.classList.add('active');
+      li.dataset.value = channel;
+      if (channel === active) li.classList.add('active');
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = c;
-      btn.addEventListener('click', () => switchChannel(c));
+      btn.textContent = channel;
+      btn.addEventListener('click', () => switchChannel(channel));
       li.appendChild(btn);
       channelListEl.appendChild(li);
     });
@@ -81,11 +81,11 @@
 
   function renderUsers(nicks) {
     userListEl.innerHTML = '';
-    nicks.forEach((n) => {
+    nicks.forEach((nickname) => {
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.innerHTML = `<span class="${nickColorClass(n)}">${escapeHtml(n)}</span>`;
+      btn.innerHTML = `<span class="${nickColorClass(nickname)}">${escapeHtml(nickname)}</span>`;
       li.appendChild(btn);
       userListEl.appendChild(li);
     });
@@ -93,8 +93,8 @@
 
   function switchChannel(chan) {
     // update active UI
-    $$('#channel-list li').forEach((li) => {
-      li.classList.toggle('active', li.dataset.value === chan);
+    $$('#channel-list li').forEach((listItem) => {
+      listItem.classList.toggle('active', listItem.dataset.value === chan);
     });
     roomNameEl.textContent = chan;
     renderLog(chan);
@@ -102,25 +102,25 @@
   }
 
   function renderLog(chan) {
-    const msgs = store[chan] ?? [];
+    const messages = store[chan] ?? [];
     logEl.innerHTML = '';
-    msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    messages.forEach((message) => logEl.appendChild(renderMsg(message)));
   }
 
-  function renderMsg(m) {
+  function renderMsg(message) {
     const row = document.createElement('div');
     row.className = 'msg';
     const time = document.createElement('div');
-    const hh = new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedTime = new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     time.className = 'time';
-    time.textContent = hh;
+    time.textContent = formattedTime;
     const body = document.createElement('div');
     const nick = document.createElement('span');
-    nick.className = `nick ${nickColorClass(m.nick)}`;
-    nick.textContent = padNick(m.nick);
+    nick.className = `nick ${nickColorClass(message.nick)}`;
+    nick.textContent = padNick(message.nick);
     const text = document.createElement('span');
     text.className = 'text';
-    text.textContent = m.text;
+    text.textContent = message.text;
     body.appendChild(nick);
     body.appendChild(document.createTextNode(': '));
     body.appendChild(text);
@@ -129,16 +129,16 @@
     return row;
   }
 
-  function padNick(n) {
+  function padNick(nickname) {
     // mimic fixed-width nick column feel
     const max = 8; // simple pad for aesthetics
-    if (n.length >= max) return n.slice(0, max);
-    return (n + ' '.repeat(max)).slice(0, max);
+    if (nickname.length >= max) return nickname.slice(0, max);
+    return (nickname + ' '.repeat(max)).slice(0, max);
   }
 
   function push(chan, nick, text) {
-    const arr = store[chan] || (store[chan] = []);
-    arr.push({ time: Date.now(), nick, text });
+    const messageArray = store[chan] || (store[chan] = []);
+    messageArray.push({ time: Date.now(), nick, text });
   }
 
   function scrollLogToBottom() {
@@ -146,7 +146,7 @@
   }
 
   const htmlEscapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => htmlEscapeMap[c]);
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, (char) => htmlEscapeMap[char]);
   }
 })();

@@ -68,7 +68,7 @@ jobs:
             const allowUsers = (core.getInput('allowlist_users') || '')
               .split(/[\s,]+/)
               .filter(Boolean)
-              .map((s) => s.toLowerCase());
+              .map((username) => username.toLowerCase());
 
             const prAuthor = (pr.user && pr.user.login) ? pr.user.login : '';
             const association = (pr.author_association || '').toUpperCase();
@@ -84,11 +84,11 @@ jobs:
             async function ensureLabel(name, color, description) {
               try {
                 await github.rest.issues.getLabel({ owner, repo, name });
-              } catch (err) {
-                if (err.status === 404) {
+              } catch (error) {
+                if (error.status === 404) {
                   await github.rest.issues.createLabel({ owner, repo, name, color, description });
                 } else {
-                  throw err;
+                  throw error;
                 }
               }
             }
@@ -102,14 +102,14 @@ jobs:
 
             // Remove the opposite label if present, then add the desired one
             const desired = covered ? labelCovered : labelReview;
-            const other = covered ? labelReview : labelCovered;
+            const oppositeLabel = covered ? labelReview : labelCovered;
 
             // remove other label if present
             try {
-              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: other });
-            } catch (err) {
-              if (err.status !== 404) {
-                core.warning(`Could not remove label '${other}': ${err.message}`);
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: oppositeLabel });
+            } catch (error) {
+              if (error.status !== 404) {
+                core.warning(`Could not remove label '${oppositeLabel}': ${error.message}`);
               }
             }
 
