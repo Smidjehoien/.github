@@ -24,13 +24,13 @@ jobs:
               per_page: 100,
             })
 
-            const bad = []
-            if (/\bWIP\b|fixup!|squash!/i.test(pr.title || '')) bad.push('title')
-            if (commits.some(c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message))) bad.push('commits')
+            const issuesFound = []
+            if (/\bWIP\b|fixup!|squash!/i.test(pr.title || '')) issuesFound.push('title')
+            if (commits.some(commit => /\bWIP\b|fixup!|squash!/i.test(commit.commit.message))) issuesFound.push('commits')
 
-            const msg = bad.length ? `Needs another look (${bad.join(', ')})` : 'Looks calm'
+            const statusMessage = issuesFound.length ? `Needs another look (${issuesFound.join(', ')})` : 'Looks calm'
             core.summary
               .addHeading('Library cat')
-              .addList([msg])
+              .addList([statusMessage])
               .write()
-            if (bad.length) core.setFailed(msg)
+            if (issuesFound.length) core.setFailed(statusMessage)

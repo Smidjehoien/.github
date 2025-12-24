@@ -25,10 +25,10 @@ jobs:
             const repo = context.repo.repo
             const issue_number = context.issue.number
             const body = context.payload.comment.body.trim()
-            const assoc = (context.payload.comment.author_association || '').toUpperCase()
+            const authorAssociation = (context.payload.comment.author_association || '').toUpperCase()
 
             const allowed = ['OWNER','MEMBER','COLLABORATOR']
-            if (!allowed.includes(assoc)) {
+            if (!allowed.includes(authorAssociation)) {
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Only members/collaborators can use /astral.' })
               return
             }
@@ -37,22 +37,22 @@ jobs:
             async function ensureLabel() {
               try {
                 await github.rest.issues.getLabel({ owner, repo, name: label })
-              } catch (e) {
-                if (e.status === 404) {
+              } catch (error) {
+                if (error.status === 404) {
                   await github.rest.issues.createLabel({ owner, repo, name: label, color: 'b497e7', description: 'Extra review requested' })
                 } else {
-                  throw e
+                  throw error
                 }
               }
             }
             await ensureLabel()
 
-            const on = /\b(on|true|yes|enable)\b/i.test(body)
-            const off = /\b(off|false|no|disable)\b/i.test(body)
-            if (on) {
+            const shouldEnable = /\b(on|true|yes|enable)\b/i.test(body)
+            const shouldDisable = /\b(off|false|no|disable)\b/i.test(body)
+            if (shouldEnable) {
               await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] })
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Astral clearance: on.' })
-            } else if (off) {
+            } else if (shouldDisable) {
               try { await github.rest.issues.removeLabel({ owner, repo, issue_number, name: label }) } catch {}
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Astral clearance: off.' })
             } else {
