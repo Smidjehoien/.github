@@ -21,10 +21,9 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
-              per_page: 30, // Reduced from 100 - most PRs have far fewer commits
+              per_page: 30,
             })
 
-            // Compile regex once for efficiency
             const wipPattern = /\bWIP\b|fixup!|squash!/i
             
             const bad = []

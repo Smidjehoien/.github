@@ -71,10 +71,7 @@
   }
 
   function renderChannels(active) {
-    // More efficient DOM clearing
-    while (channelListEl.firstChild) {
-      channelListEl.removeChild(channelListEl.firstChild);
-    }
+    channelListEl.replaceChildren();
     channels.forEach((c) => {
       const li = document.createElement('li');
       li.dataset.value = c;
@@ -89,10 +86,7 @@
   }
 
   function renderUsers(nicks) {
-    // More efficient DOM clearing
-    while (userListEl.firstChild) {
-      userListEl.removeChild(userListEl.firstChild);
-    }
+    userListEl.replaceChildren();
     nicks.forEach((n) => {
       const li = document.createElement('li');
       const btn = document.createElement('button');
@@ -115,10 +109,7 @@
 
   function renderLog(chan) {
     const msgs = store[chan] ?? [];
-    // More efficient DOM clearing  
-    while (logEl.firstChild) {
-      logEl.removeChild(logEl.firstChild);
-    }
+    logEl.replaceChildren();
     // Use DocumentFragment for batch DOM operations
     const fragment = document.createDocumentFragment();
     msgs.forEach((m) => fragment.appendChild(renderMsg(m)));
