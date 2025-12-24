@@ -14,9 +14,15 @@
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
   const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
+  
+  // Cache nick color calculations to avoid rehashing
+  const nickColorCache = new Map();
   const nickColorClass = (nick) => {
+    if (nickColorCache.has(nick)) return nickColorCache.get(nick);
     const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return nickColors[idx];
+    const color = nickColors[idx];
+    nickColorCache.set(nick, color);
+    return color;
   };
 
   // Simple hash for color bucketing
@@ -65,7 +71,10 @@
   }
 
   function renderChannels(active) {
-    channelListEl.innerHTML = '';
+    // More efficient DOM clearing
+    while (channelListEl.firstChild) {
+      channelListEl.removeChild(channelListEl.firstChild);
+    }
     channels.forEach((c) => {
       const li = document.createElement('li');
       li.dataset.value = c;
@@ -80,7 +89,10 @@
   }
 
   function renderUsers(nicks) {
-    userListEl.innerHTML = '';
+    // More efficient DOM clearing
+    while (userListEl.firstChild) {
+      userListEl.removeChild(userListEl.firstChild);
+    }
     nicks.forEach((n) => {
       const li = document.createElement('li');
       const btn = document.createElement('button');
@@ -103,8 +115,14 @@
 
   function renderLog(chan) {
     const msgs = store[chan] ?? [];
-    logEl.innerHTML = '';
-    msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    // More efficient DOM clearing  
+    while (logEl.firstChild) {
+      logEl.removeChild(logEl.firstChild);
+    }
+    // Use DocumentFragment for batch DOM operations
+    const fragment = document.createDocumentFragment();
+    msgs.forEach((m) => fragment.appendChild(renderMsg(m)));
+    logEl.appendChild(fragment);
   }
 
   function renderMsg(m) {
