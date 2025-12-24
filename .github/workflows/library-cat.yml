@@ -25,7 +25,7 @@ jobs:
             })
 
             const wipPattern = /\bWIP\b|fixup!|squash!/i
-            
+
             const bad = []
             if (wipPattern.test(pr.title || '')) bad.push('title')
             if (commits.some(c => wipPattern.test(c.commit.message))) bad.push('commits')
