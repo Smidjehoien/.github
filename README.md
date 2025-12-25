@@ -16,7 +16,7 @@ What it **is**:
 
 - `ETHICS.md` – You should read this first. Or last. Or just feel it.
 - `LISANCE.txt` – For systems that reject the cold logic of traditional licensing.
-- `cla.yml` – Marks the line between chaos and contribution.
+- `.github/workflows/` – Marks the line between chaos and contribution.
 - `examples/` – Things that almost make sense.
 - `workflows/` – Machines that don’t ask permission to run.
 
