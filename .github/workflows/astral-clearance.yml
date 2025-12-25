@@ -34,18 +34,18 @@ jobs:
             }
 
             const label = 'needs_astral_clearance'
-            async function ensureLabel() {
+            async function ensureLabel(name, color, description) {
               try {
-                await github.rest.issues.getLabel({ owner, repo, name: label })
-              } catch (e) {
-                if (e.status === 404) {
-                  await github.rest.issues.createLabel({ owner, repo, name: label, color: 'b497e7', description: 'Extra review requested' })
+                await github.rest.issues.getLabel({ owner, repo, name })
+              } catch (err) {
+                if (err.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description })
                 } else {
-                  throw e
+                  throw err
                 }
               }
             }
-            await ensureLabel()
+            await ensureLabel(label, 'b497e7', 'Extra review requested')
 
             const on = /\b(on|true|yes|enable)\b/i.test(body)
             const off = /\b(off|false|no|disable)\b/i.test(body)
