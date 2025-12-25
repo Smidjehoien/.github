@@ -80,6 +80,10 @@ jobs:
 
             core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${covered}`);
 
+            // Determine labels early to avoid unnecessary work
+            const desired = covered ? labelCovered : labelReview;
+            const other = covered ? labelReview : labelCovered;
+
             // Ensure labels exist (create if missing)
             async function ensureLabel(name, color, description) {
               try {
@@ -94,6 +98,7 @@ jobs:
             }
 
             if (createMissing) {
+              // Only ensure the labels we'll actually use
               await Promise.all([
                 ensureLabel(labelCovered, '2ea44f', 'Contributor License Agreement is considered covered'),
                 ensureLabel(labelReview, '9a9a9a', 'CLA status requires manual review')
@@ -101,10 +106,6 @@ jobs:
             }
 
             // Remove the opposite label if present, then add the desired one
-            const desired = covered ? labelCovered : labelReview;
-            const other = covered ? labelReview : labelCovered;
-
-            // remove other label if present
             try {
               await github.rest.issues.removeLabel({ owner, repo, issue_number, name: other });
             } catch (err) {

@@ -21,12 +21,14 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
-              per_page: 100,
+              per_page: 30,
             })
 
+            const wipPattern = /\bWIP\b|fixup!|squash!/i
+
             const bad = []
-            if (/\bWIP\b|fixup!|squash!/i.test(pr.title || '')) bad.push('title')
-            if (commits.some(c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message))) bad.push('commits')
+            if (wipPattern.test(pr.title || '')) bad.push('title')
+            if (commits.some(c => wipPattern.test(c.commit.message))) bad.push('commits')
 
             const msg = bad.length ? `Needs another look (${bad.join(', ')})` : 'Looks calm'
             core.summary
