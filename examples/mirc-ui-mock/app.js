@@ -105,7 +105,8 @@
   }
 
   function switchChannel(chan) {
-    // update active UI - directly update classes instead of re-rendering
+    // Directly update active classes for performance (avoiding full renderChannels call)
+    // This is intentionally duplicated from renderChannels for efficiency
     $$('#channel-list li').forEach((li) => {
       li.classList.toggle('active', li.dataset.value === chan);
     });
@@ -124,6 +125,7 @@
       msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
     } else {
       // Incremental update: only add new messages
+      // Safe because messages are append-only and DOM is not modified elsewhere
       const currentCount = logEl.children.length;
       if (msgs.length > currentCount) {
         for (let i = currentCount; i < msgs.length; i++) {
