@@ -145,14 +145,14 @@ When working with issues in this repository:
 - **Community-driven**: Resolution often involves input from @CosmicJesterX, @JX, @starla, and the "TEX gang"
 - **Creative solutions**: Fixes honor the repository's philosophy of "concentric truths" and "protocols with personality"
 
-### Current Open Issues (as of setup)
+### Current Open Issues (as of December 2025)
 When reviewing issues:
-- **#29** (✨ Set up Copilot instructions): Active - being addressed in current PR
-- **#27** (Hm, any ideas?): Open discussion
-- **#19** (hi ! 8)): Open discussion with 3 comments
-- **#10** (✨ Set up Copilot instructions): Previously discussed, copilot-instructions.md already exists and is maintained
+- **#29** - ✨ Set up Copilot instructions: Active - being addressed in current PR
+- **#27** - Hm, any ideas?: Open discussion
+- **#19** - hi ! 8): Open discussion with 3 comments
+- **#10** - ✨ Set up Copilot instructions: Previously discussed, copilot-instructions.md already exists and is maintained
 
-Note: Issue counts and status should be verified through GitHub's issue tracker for the most current information.
+**Note**: This snapshot represents the state as of December 29, 2025. Issue counts and status should always be verified through GitHub's issue tracker for the most current information.
 
 ## Special Notes
 
