@@ -1,5 +1,6 @@
+---
 name: CLA marker
-on:
+'on':
   pull_request_target:
     types: [opened, reopened, synchronize, edited, ready_for_review]
 

@@ -1,6 +1,7 @@
+---
 name: CLA marker (reusable)
 
-on:
+'on':
   workflow_call:
     inputs:
       label_covered:
@@ -14,12 +15,16 @@ on:
         default: "CLA: review"
         type: string
       allowlist_users:
-        description: "Comma/space-separated GitHub usernames that are CLA-covered by policy"
+        description: >-
+          Comma/space-separated GitHub usernames that are
+          CLA-covered by policy
         required: false
         default: ""
         type: string
       cover_org_members:
-        description: "Treat members/owners of the base repository's organization as CLA-covered"
+        description: >-
+          Treat members/owners of the base repository's
+          organization as CLA-covered
         required: false
         default: true
         type: boolean
@@ -51,7 +56,10 @@ jobs:
             const core = require('@actions/core');
             const pr = context.payload.pull_request;
             if (!pr) {
-              core.setFailed('This workflow must be triggered from a pull_request* event in the caller.');
+              core.setFailed(
+                'This workflow must be triggered from a ' +
+                'pull_request* event in the caller.'
+              );
               return;
             }
 
@@ -61,8 +69,12 @@ jobs:
 
             const labelCovered = core.getInput('label_covered');
             const labelReview = core.getInput('label_review');
-            const coverOrgMembers = core.getBooleanInput('cover_org_members');
-            const coverCollaborators = core.getBooleanInput('cover_collaborators');
+            const coverOrgMembers = core.getBooleanInput(
+              'cover_org_members'
+            );
+            const coverCollaborators = core.getBooleanInput(
+              'cover_collaborators'
+            );
             const createMissing = core.getBooleanInput('create_missing_labels');
 
             const allowUsers = (core.getInput('allowlist_users') || '')
@@ -70,15 +82,26 @@ jobs:
               .filter(Boolean)
               .map((s) => s.toLowerCase());
 
-            const prAuthor = (pr.user && pr.user.login) ? pr.user.login : '';
-            const association = (pr.author_association || '').toUpperCase();
+            const prAuthor = (pr.user && pr.user.login) ?
+              pr.user.login : '';
+            const association = (
+              pr.author_association || ''
+            ).toUpperCase();
 
-            const isAllowlistedAuthor = allowUsers.includes(prAuthor.toLowerCase());
-            const isOrgMemberAuthor = coverOrgMembers && ['MEMBER', 'OWNER'].includes(association);
-            const isCollaborator = coverCollaborators && association === 'COLLABORATOR';
-            const covered = isAllowlistedAuthor || isOrgMemberAuthor || isCollaborator;
+            const isAllowlistedAuthor = allowUsers.includes(
+              prAuthor.toLowerCase()
+            );
+            const isOrgMemberAuthor = coverOrgMembers &&
+              ['MEMBER', 'OWNER'].includes(association);
+            const isCollaborator = coverCollaborators &&
+              association === 'COLLABORATOR';
+            const covered = isAllowlistedAuthor ||
+              isOrgMemberAuthor || isCollaborator;
 
-            core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${covered}`);
+            core.info(
+              `PR #${issue_number} by @${prAuthor} ` +
+              `(association=${association}) -> covered=${covered}`
+            );
 
             // Ensure labels exist (create if missing)
             async function ensureLabel(name, color, description) {
@@ -86,7 +109,9 @@ jobs:
                 await github.rest.issues.getLabel({ owner, repo, name });
               } catch (err) {
                 if (err.status === 404) {
-                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                  await github.rest.issues.createLabel({
+                    owner, repo, name, color, description
+                  });
                 } else {
                   throw err;
                 }
@@ -95,31 +120,47 @@ jobs:
 
             if (createMissing) {
               await Promise.all([
-                ensureLabel(labelCovered, '2ea44f', 'Contributor License Agreement is considered covered'),
-                ensureLabel(labelReview, '9a9a9a', 'CLA status requires manual review')
+                ensureLabel(
+                  labelCovered, '2ea44f',
+                  'Contributor License Agreement is considered covered'
+                ),
+                ensureLabel(
+                  labelReview, '9a9a9a',
+                  'CLA status requires manual review'
+                )
               ]);
             }
 
-            // Remove the opposite label if present, then add the desired one
+            // Remove the opposite label if present,
+            // then add the desired one
             const desired = covered ? labelCovered : labelReview;
             const other = covered ? labelReview : labelCovered;
 
             // remove other label if present
             try {
-              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: other });
+              await github.rest.issues.removeLabel({
+                owner, repo, issue_number, name: other
+              });
             } catch (err) {
               if (err.status !== 404) {
-                core.warning(`Could not remove label '${other}': ${err.message}`);
+                core.warning(
+                  `Could not remove label '${other}': ${err.message}`
+                );
               }
             }
 
             // add desired label (idempotent)
-            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [desired] });
+            await github.rest.issues.addLabels({
+              owner, repo, issue_number, labels: [desired]
+            });
 
             core.summary
               .addHeading('CLA marker')
               .addTable([
-                [{data: 'PR', header: true}, {data: '#'+issue_number, header: false}],
+                [
+                  {data: 'PR', header: true},
+                  {data: '#'+issue_number, header: false}
+                ],
                 ['Author', '@'+prAuthor],
                 ['Association', association || ''],
                 ['Allowlisted users', allowUsers.join(', ') || '(none)'],

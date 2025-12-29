@@ -1,6 +1,7 @@
+---
 name: Library cat (optional)
 
-on:
+'on':
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review, edited]
 
@@ -25,10 +26,15 @@ jobs:
             })
 
             const bad = []
-            if (/\bWIP\b|fixup!|squash!/i.test(pr.title || '')) bad.push('title')
-            if (commits.some(c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message))) bad.push('commits')
+            if (/\bWIP\b|fixup!|squash!/i.test(pr.title || ''))
+              bad.push('title')
+            if (commits.some(
+              c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message)
+            ))
+              bad.push('commits')
 
-            const msg = bad.length ? `Needs another look (${bad.join(', ')})` : 'Looks calm'
+            const msg = bad.length ?
+              `Needs another look (${bad.join(', ')})` : 'Looks calm'
             core.summary
               .addHeading('Library cat')
               .addList([msg])
