@@ -120,6 +120,40 @@ Use the PR template which includes:
 Code is licensed under MPL-2.0. See LICENSE file for details.
 Also review LISANCE.txt for the joy-sensitive licensing perspective.
 
+## Issue Management & Resolution
+
+### Issue Summary
+This repository tracks various types of issues:
+- **Setup & Configuration**: Issues related to Copilot instructions, workflow setup, and repository configuration
+- **Feature Requests**: Enhancements to workflows, tools, and documentation (marked with ✨)
+- **Questions & Discussion**: Open-ended discussions about the repository philosophy and usage
+
+### Checking Issue Status
+When working with issues in this repository:
+- Use GitHub's issue list to check current open issues
+- Look for labels like "CLA: covered" or "CLA: review" for CLA-related items
+- Check comments for resolution updates from @charliecreates and other team members
+- Issues may be resolved through:
+  - Direct code changes in PRs
+  - Workflow adjustments
+  - Documentation updates
+  - Collaborative discussion leading to consensus
+
+### Resolution Patterns
+- **Duplicate issues**: Multiple issues may exist for the same topic (e.g., #10 and #29 both about Copilot instructions)
+- **Iterative improvements**: Some issues are resolved incrementally through multiple PRs
+- **Community-driven**: Resolution often involves input from @CosmicJesterX, @JX, @starla, and the "TEX gang"
+- **Creative solutions**: Fixes honor the repository's philosophy of "concentric truths" and "protocols with personality"
+
+### Current Open Issues (as of setup)
+When reviewing issues:
+- **#29** (✨ Set up Copilot instructions): Active - being addressed in current PR
+- **#27** (Hm, any ideas?): Open discussion
+- **#19** (hi ! 8)): Open discussion with 3 comments
+- **#10** (✨ Set up Copilot instructions): Previously discussed, copilot-instructions.md already exists and is maintained
+
+Note: Issue counts and status should be verified through GitHub's issue tracker for the most current information.
+
 ## Special Notes
 
 - Read ETHICS.md first (or last, or just feel it)
