@@ -81,19 +81,19 @@ jobs:
             core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${covered}`);
 
             // Ensure labels exist (create if missing)
-            async function ensureLabel(name, color, description) {
-              try {
-                await github.rest.issues.getLabel({ owner, repo, name });
-              } catch (err) {
-                if (err.status === 404) {
-                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
-                } else {
-                  throw err;
+            if (createMissing) {
+              async function ensureLabel(name, color, description) {
+                try {
+                  await github.rest.issues.getLabel({ owner, repo, name });
+                } catch (err) {
+                  if (err.status === 404) {
+                    await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                  } else {
+                    throw err;
+                  }
                 }
               }
-            }
 
-            if (createMissing) {
               await Promise.all([
                 ensureLabel(labelCovered, '2ea44f', 'Contributor License Agreement is considered covered'),
                 ensureLabel(labelReview, '9a9a9a', 'CLA status requires manual review')

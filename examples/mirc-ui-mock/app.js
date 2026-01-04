@@ -14,9 +14,13 @@
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
   const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
+  const nickColorCache = new Map();
   const nickColorClass = (nick) => {
-    const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return nickColors[idx];
+    if (!nickColorCache.has(nick)) {
+      const idx = Math.abs(hash(nick)) % 6; // 0..5
+      nickColorCache.set(nick, nickColors[idx]);
+    }
+    return nickColorCache.get(nick);
   };
 
   // Simple hash for color bucketing
@@ -65,18 +69,27 @@
   }
 
   function renderChannels(active) {
-    channelListEl.innerHTML = '';
-    channels.forEach((c) => {
-      const li = document.createElement('li');
-      li.dataset.value = c;
-      if (c === active) li.classList.add('active');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = c;
-      btn.addEventListener('click', () => switchChannel(c));
-      li.appendChild(btn);
-      channelListEl.appendChild(li);
-    });
+    // Only update active state instead of recreating all elements
+    const existingChannels = $$('#channel-list li');
+    if (existingChannels.length === channels.length) {
+      existingChannels.forEach((li) => {
+        li.classList.toggle('active', li.dataset.value === active);
+      });
+    } else {
+      // Initial render or channel list changed
+      channelListEl.innerHTML = '';
+      channels.forEach((c) => {
+        const li = document.createElement('li');
+        li.dataset.value = c;
+        if (c === active) li.classList.add('active');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = c;
+        btn.addEventListener('click', () => switchChannel(c));
+        li.appendChild(btn);
+        channelListEl.appendChild(li);
+      });
+    }
   }
 
   function renderUsers(nicks) {
@@ -92,7 +105,8 @@
   }
 
   function switchChannel(chan) {
-    // update active UI
+    // Directly update active classes for performance (avoiding full renderChannels call)
+    // This is intentionally duplicated from renderChannels for efficiency
     $$('#channel-list li').forEach((li) => {
       li.classList.toggle('active', li.dataset.value === chan);
     });
@@ -103,8 +117,22 @@
 
   function renderLog(chan) {
     const msgs = store[chan] ?? [];
-    logEl.innerHTML = '';
-    msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    // Only clear and re-render if we switched channels
+    const currentChan = logEl.dataset.channel;
+    if (currentChan !== chan) {
+      logEl.innerHTML = '';
+      logEl.dataset.channel = chan;
+      msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    } else {
+      // Incremental update: only add new messages
+      // Safe because messages are append-only and DOM is not modified elsewhere
+      const currentCount = logEl.children.length;
+      if (msgs.length > currentCount) {
+        for (let i = currentCount; i < msgs.length; i++) {
+          logEl.appendChild(renderMsg(msgs[i]));
+        }
+      }
+    }
   }
 
   function renderMsg(m) {
