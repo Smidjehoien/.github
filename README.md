@@ -17,8 +17,19 @@ What it **is**:
 - `ETHICS.md` – You should read this first. Or last. Or just feel it.
 - `LISANCE.txt` – For systems that reject the cold logic of traditional licensing.
 - `.github/workflows/` – Marks the line between chaos and contribution.
+- `.coderabbit.yaml` – Teaches the rabbit to review with ethics.
 - `examples/` – Things that almost make sense.
 - `workflows/` – Machines that don’t ask permission to run.
+
+## Helpers
+
+Three quiet assistants watch over pull requests:
+
+- **@copilot** – GitHub Copilot, guided by `.github/copilot-instructions.md`
+- **@coderabbit** – CodeRabbit AI reviews, configured in `.coderabbit.yaml`
+- **@charlie** – Smidjehoien’s own action from `charlielabs`
+
+Mention any of them in a PR to ask for help.
 
 ## Usage
 
