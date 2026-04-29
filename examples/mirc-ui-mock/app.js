@@ -10,13 +10,18 @@
   const inputEl = $('#input');
   const roomNameEl = $('#room-name');
   const themeToggleEl = document.querySelector('.theme-toggle');
+  const readingToggleEl = document.querySelector('.reading-toggle');
 
   const channels = ['#general', '#random', '#cozy-outpost'];
   const users = ['alice', 'bob', 'carol', 'dave'];
   const nickColors = ['nick-a','nick-b','nick-c','nick-d','nick-e','nick-f'];
+  const nickColorCache = new Map();
   const nickColorClass = (nick) => {
-    const idx = Math.abs(hash(nick)) % 6; // 0..5
-    return nickColors[idx];
+    if (!nickColorCache.has(nick)) {
+      const idx = Math.abs(hash(nick)) % 6; // 0..5
+      nickColorCache.set(nick, nickColors[idx]);
+    }
+    return nickColorCache.get(nick);
   };
 
   // Simple hash for color bucketing
@@ -54,10 +59,24 @@
   });
 
   // Theme toggle
-  themeToggleEl.addEventListener('click', () => document.body.classList.toggle('light'));
-  themeToggleEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') document.body.classList.toggle('light');
+  themeToggleEl.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    reflectPressed(themeToggleEl, document.body.classList.contains('light'));
   });
+
+  // Reading mode (dyslexia-friendly) — typography only; no storage
+  readingToggleEl.addEventListener('click', () => {
+    document.body.classList.toggle('reading-mode');
+    reflectPressed(readingToggleEl, document.body.classList.contains('reading-mode'));
+  });
+  
+  // Sync ARIA pressed states with initial classes
+  reflectPressed(themeToggleEl, document.body.classList.contains('light'));
+  reflectPressed(readingToggleEl, document.body.classList.contains('reading-mode'));
+
+  function reflectPressed(el, on) {
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
 
   function currentChannel() {
     const active = channelListEl.querySelector('li.active');
@@ -65,18 +84,27 @@
   }
 
   function renderChannels(active) {
-    channelListEl.innerHTML = '';
-    channels.forEach((c) => {
-      const li = document.createElement('li');
-      li.dataset.value = c;
-      if (c === active) li.classList.add('active');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = c;
-      btn.addEventListener('click', () => switchChannel(c));
-      li.appendChild(btn);
-      channelListEl.appendChild(li);
-    });
+    // Only update active state instead of recreating all elements
+    const existingChannels = $$('#channel-list li');
+    if (existingChannels.length === channels.length) {
+      existingChannels.forEach((li) => {
+        li.classList.toggle('active', li.dataset.value === active);
+      });
+    } else {
+      // Initial render or channel list changed
+      channelListEl.innerHTML = '';
+      channels.forEach((c) => {
+        const li = document.createElement('li');
+        li.dataset.value = c;
+        if (c === active) li.classList.add('active');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = c;
+        btn.addEventListener('click', () => switchChannel(c));
+        li.appendChild(btn);
+        channelListEl.appendChild(li);
+      });
+    }
   }
 
   function renderUsers(nicks) {
@@ -85,14 +113,18 @@
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.innerHTML = `<span class="${nickColorClass(n)}">${escapeHtml(n)}</span>`;
+      const span = document.createElement('span');
+      span.className = nickColorClass(n);
+      span.textContent = n;
+      btn.appendChild(span);
       li.appendChild(btn);
       userListEl.appendChild(li);
     });
   }
 
   function switchChannel(chan) {
-    // update active UI
+    // Directly update active classes for performance (avoiding full renderChannels call)
+    // This is intentionally duplicated from renderChannels for efficiency
     $$('#channel-list li').forEach((li) => {
       li.classList.toggle('active', li.dataset.value === chan);
     });
@@ -103,8 +135,22 @@
 
   function renderLog(chan) {
     const msgs = store[chan] ?? [];
-    logEl.innerHTML = '';
-    msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    // Only clear and re-render if we switched channels
+    const currentChan = logEl.dataset.channel;
+    if (currentChan !== chan) {
+      logEl.innerHTML = '';
+      logEl.dataset.channel = chan;
+      msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+    } else {
+      // Incremental update: only add new messages
+      // Safe because messages are append-only and DOM is not modified elsewhere
+      const currentCount = logEl.children.length;
+      if (msgs.length > currentCount) {
+        for (let i = currentCount; i < msgs.length; i++) {
+          logEl.appendChild(renderMsg(msgs[i]));
+        }
+      }
+    }
   }
 
   function renderMsg(m) {
@@ -145,8 +191,5 @@
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  const htmlEscapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => htmlEscapeMap[c]);
-  }
+
 })();

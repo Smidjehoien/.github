@@ -1,0 +1,2 @@
+# YAML parse: ok
+$ ruby -ryaml -e 'YAML.load_file(%q(.github/workflows/friendly-tentacle.yml)); puts "ok"'

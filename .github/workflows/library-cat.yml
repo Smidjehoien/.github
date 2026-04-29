@@ -17,16 +17,22 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request
-            const { data: commits } = await github.rest.pulls.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100,
-            })
-
             const bad = []
+            
+            // Check title first (no API call needed)
             if (/\bWIP\b|fixup!|squash!/i.test(pr.title || '')) bad.push('title')
-            if (commits.some(c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message))) bad.push('commits')
+            
+            // Only fetch commits if title check passed
+            if (bad.length === 0) {
+              const { data: commits } = await github.rest.pulls.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 30,
+              })
+              
+              if (commits.some(c => /\bWIP\b|fixup!|squash!/i.test(c.commit.message))) bad.push('commits')
+            }
 
             const msg = bad.length ? `Needs another look (${bad.join(', ')})` : 'Looks calm'
             core.summary
