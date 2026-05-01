@@ -18,6 +18,7 @@ What it **is**:
 - `LISANCE.txt` – For systems that reject the cold logic of traditional licensing.
 - `WORKFLOWS.md` – Detailed guide to all workflows and how to enable them.
 - `.github/workflows/` – Marks the line between chaos and contribution.
+- `.coderabbit.yaml` – Teaches the rabbit to review with ethics.
 - `examples/` – Things that almost make sense.
 - `workflows/` – Machines that don’t ask permission to run.
   - `friendly-tentacle.yml` – Extends a tentacle in greeting when you say hi.
@@ -25,6 +26,16 @@ What it **is**:
   - `astral-clearance.yml` – Summons extra review powers with `/astral`.
   - `library-cat.yml` – Watches for WIP commits with quiet vigilance.
   - `cla-mark.yml` – The reusable CLA marker, gentle but firm.
+
+## Helpers
+
+Three quiet assistants watch over pull requests:
+
+- **@copilot** – GitHub Copilot, guided by `.github/copilot-instructions.md`
+- **@coderabbit** – CodeRabbit AI reviews, configured in `.coderabbit.yaml`
+- **@charlie** – Smidjehoien’s own action from `charlielabs`
+
+Mention any of them in a PR to ask for help.
 
 ## Usage
 
