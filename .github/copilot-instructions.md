@@ -119,9 +119,20 @@ These workflows are opt-in and require repository variables to enable:
 - Only members/collaborators can use the command
 - Requires `issues: write` and `pull-requests: write` permissions
 
+## AI Review Helpers
+
+This repository is configured for three AI assistants:
+
+- **@copilot** — GitHub Copilot (this file provides its instructions)
+- **@coderabbit** — CodeRabbit automated PR reviews (configured in `.coderabbit.yaml`)
+- **@charlie** — Smidjehoien's own GitHub Action (`Smidjehoien/charlielabs`)
+
+You can mention any of them in a PR comment to request help.
+
 ## File Structure
 
 ```
+.coderabbit.yaml      # CodeRabbit AI review configuration
 .github/
   workflows/          # Active GitHub Actions workflows
     cla-mark.yml     # Reusable CLA marking workflow
