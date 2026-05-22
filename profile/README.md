@@ -89,3 +89,7 @@ BLEKKSPRUT aims to become:
 - Be curious.
 - Ink gently.
 - Merge only when the stars align.
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Smidjehoien/app?utm_source=oss&utm_medium=github&utm_campaign=Smidjehoien%2Fapp&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
+

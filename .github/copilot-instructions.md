@@ -131,7 +131,7 @@ This repository is configured for three AI assistants:
 
 - **@copilot** — GitHub Copilot (this file provides its instructions)
 - **@coderabbit** — CodeRabbit automated PR reviews (configured in `.coderabbit.yaml`)
-- **@charlie** — Smidjehoien’s own GitHub Action (`Smidjehoien/charlielabs`)
+- **@charlie** — Smidjehoien's own GitHub Action (`Smidjehoien/charlielabs`)
 
 You can mention any of them in a PR comment to request help.
 
