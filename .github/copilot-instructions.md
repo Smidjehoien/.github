@@ -106,6 +106,7 @@ These workflows are opt-in and require repository variables to enable:
 - Detects greetings like "hi", "hello", "hey", "8)", "👋"
 - Requires `issues: write` permission
 
+
 **PR Poetry** (`.github/workflows/pr-poetry.yml`):
 - Adds occasional haiku comments to pull requests
 - Enable with repository variable: `ENABLE_PR_POETRY=true`
