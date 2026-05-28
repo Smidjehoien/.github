@@ -100,6 +100,13 @@ This repository provides CLA (Contributor License Agreement) marking workflows:
 ### Optional Workflows
 These workflows are opt-in and require repository variables to enable:
 
+**Friendly Tentacle** (`.github/workflows/friendly-tentacle.yml`):
+- Responds to greetings in issues and comments with BLEKKSPRUT-style welcome messages
+- Enable with repository variable: `ENABLE_FRIENDLY_TENTACLE=true`
+- Detects greetings like "hi", "hello", "hey", "8)", "👋"
+- Requires `issues: write` permission
+
+
 **PR Poetry** (`.github/workflows/pr-poetry.yml`):
 - Adds occasional haiku comments to pull requests
 - Enable with repository variable: `ENABLE_PR_POETRY=true`
@@ -137,6 +144,7 @@ You can mention any of them in a PR comment to request help.
   workflows/          # Active GitHub Actions workflows
     cla-mark.yml     # Reusable CLA marking workflow
     cla.yml          # CLA workflow caller (active)
+    friendly-tentacle.yml  # Optional greeting responder
     pr-poetry.yml    # Optional PR haiku comments
     library-cat.yml  # Optional WIP/fixup checker
     astral-clearance.yml  # Optional /astral command
