@@ -1,3 +1,5 @@
-function calculateNumbers(var1, var2) {
-  return var1 + var2;
+/* SPDX-License-Identifier: MPL-2.0 */
+// Copilot inline-autocomplete demo — adds two numbers and returns their sum.
+function calculateNumbers(firstNumber, secondNumber) {
+  return firstNumber + secondNumber;
 }
