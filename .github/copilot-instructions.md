@@ -67,7 +67,7 @@ examples/
     └── README.md              # Usage instructions for the mock
 
 workflows/
-└── cla.ylm                    # Example workflow caller (intentional .ylm typo)
+└── cla.yml                    # Example workflow caller
 
 Root files:
 ├── cla.yml                    # Another example CLA workflow caller
