@@ -1,212 +1,151 @@
 # Copilot Instructions for BLEKKSPRUT
 
-## Repository Philosophy
+## Repository Overview
 
-BLEKKSPRUT is not a typical repository. It embraces:
-- **Concentric truths** over linear logic
-- **Protocols with personality** over rigid standards
-- **Joy-sensitive material** and creative documentation
-- **Ethics with teeth** (see ETHICS.md)
+BLEKKSPRUT is a small configuration repository (~15 files) providing:
+- **Reusable CLA (Contributor License Agreement) workflows** for GitHub Actions
+- **Example configurations** for consuming those workflows
+- **A static HTML/CSS/JS UI mockup** (no backend, no build step)
 
-## Core Principles
-
-### Ethics & Responsible Use
-Always comply with `ETHICS.md`:
-- **Non-targeting & benevolence**: No monitoring, profiling, or attempts to "catch" people
-- **Consent-driven**: Participation is voluntary and opt-in
-- **Data minimization**: Avoid PII, sensitive traits, and secrets entirely
-- **Conservative posture**: Prefer non-action over risky or ambiguous action
-- **No scraping**: Never scrape gated/paid content or bypass DRM/rate limits
-
-### Security
-- Never commit secrets; use platform secrets where needed
-- Keep logs generic and short-lived
-- No hostnames, secrets, or sensitive details in logs
-
-## Code Style
-
-### Documentation
-- Embrace creative, poetic documentation that still conveys meaning
-- Use personality and metaphor when appropriate
-- Keep technical accuracy while adding warmth
-- Example: The repository README uses metaphors like "tentacles" and "ink gently"
-
-### Naming Conventions
-- Use clear, descriptive names that may include creative flair
-- Prefer kebab-case for file names (e.g., `cla-mark.yml`)
-- Use lowercase with underscores for input parameters (e.g., `cover_org_members`)
-
-### Comments
-- Keep comments meaningful and concise
-- Use emojis sparingly but intentionally (e.g., 📎 for warnings, 🕯️ for guidance)
-- Avoid over-commenting obvious code
-
-## GitHub Actions & Workflows
-
-### Reusable Workflows
-- Place reusable workflows in `.github/workflows/`
-- Use `workflow_call` for reusable actions
-- Provide clear input descriptions with sensible defaults
-- Example structure from `cla-mark.yml`:
-  ```yaml
-  on:
-    workflow_call:
-      inputs:
-        input_name:
-          description: "Clear description"
-          required: false
-          default: "sensible_default"
-          type: string
-  ```
-
-### Permissions
-- Use minimal required permissions
-- Explicitly declare permissions in jobs:
-  ```yaml
-  permissions:
-    contents: read
-    issues: write
-    pull-requests: write
-  ```
-
-### GitHub Script Actions
-- Use `actions/github-script@v7` for complex logic
-- Include informative logging with `core.info()`
-- Use `core.summary` for workflow run summaries
-- Handle errors gracefully with try-catch blocks
-
-## Dependencies
-
-### GitHub Actions
-- `actions/github-script@v7` - Used for workflow automation with JavaScript
-- Standard actions are pinned to major versions (e.g., `@v7`)
-- No package managers required (workflows run in GitHub-hosted runners)
-
-### Examples
-- Examples in `examples/` use vanilla HTML/CSS/JavaScript
-- No build tools, bundlers, or package managers
-- Keep examples dependency-free and offline-first
-
-## Workflows
-
-### CLA Workflows
-This repository provides CLA (Contributor License Agreement) marking workflows:
-- Reusable workflow: `.github/workflows/cla-mark.yml` (implementation)
-- Active workflow caller: `.github/workflows/cla.yml` (uses the reusable workflow)
-- Example caller: `cla.yml` (root directory) and `workflows/cla.yml` (example)
-- Labels: "CLA: covered" and "CLA: review"
-- Supports allowlisting users and treating org members/collaborators as covered
-
-### Optional Workflows
-These workflows are opt-in and require repository variables to enable:
-
-**PR Poetry** (`.github/workflows/pr-poetry.yml`):
-- Adds occasional haiku comments to pull requests
-- Enable with repository variable: `ENABLE_PR_POETRY=true`
-- Adjust probability with: `PR_POETRY_P` (default: 0.13 or 13%)
-- Requires `pull-requests: write` permission
-
-**Library Cat** (`.github/workflows/library-cat.yml`):
-- Checks for WIP markers, fixup!, and squash! in PR titles and commits
-- Enable with repository variable: `ENABLE_LIBRARY_CAT=true`
-- Helps maintain clean PR history
-- Requires `pull-requests: read` permission
-
-**Astral Clearance** (`.github/workflows/astral-clearance.yml`):
-- Adds `/astral on` and `/astral off` commands for maintainers
-- Toggles `needs_astral_clearance` label for extra review
-- Enable with repository variable: `ENABLE_ASTRAL=true`
-- Only members/collaborators can use the command
-- Requires `issues: write` and `pull-requests: write` permissions
-
-## AI Review Helpers
-
-This repository is configured for three AI assistants:
-
-- **@copilot** — GitHub Copilot (this file provides its instructions)
-- **@coderabbit** — CodeRabbit automated PR reviews (configured in `.coderabbit.yaml`)
-- **@charlie** — Smidjehoien's own GitHub Action (`Smidjehoien/charlielabs`)
-
-You can mention any of them in a PR comment to request help.
-
-## File Structure
-
-```
-.coderabbit.yaml      # CodeRabbit AI review configuration
-.github/
-  workflows/          # Active GitHub Actions workflows
-    cla-mark.yml     # Reusable CLA marking workflow
-    cla.yml          # CLA workflow caller (active)
-    pr-poetry.yml    # Optional PR haiku comments
-    library-cat.yml  # Optional WIP/fixup checker
-    astral-clearance.yml  # Optional /astral command
-  PULL_REQUEST_TEMPLATE.md
-  copilot-instructions.md (this file)
-examples/             # Example projects and mockups
-  mirc-ui-mock/      # Self-contained HTML/CSS/JS example
-workflows/            # Example workflow configuration files
-  cla.yml            # Example CLA workflow caller
-ETHICS.md            # Ethics and responsible use policy
-LICENSE              # MPL-2.0 license
-LISANCE.txt          # Joy-sensitive licensing document
-README.md            # Creative repository introduction
-```
-
-## Pull Request Guidelines
-
-Use the PR template which includes:
-- Summary of changes
-- Ethics & Safety checklist (compliance with ETHICS.md)
-- Security checklist (no secrets, safe logging)
-- Optional notes for risks, follow-ups, or screenshots
-
-## Development Setup
-
-This repository contains primarily GitHub Actions workflows and documentation:
-- No build step required for workflows
-- Workflows can be tested locally using [act](https://github.com/nektos/act)
-- Examples (like `examples/mirc-ui-mock`) are self-contained HTML/CSS/JS
-
-### Testing Workflows Locally
-```bash
-# Install act (optional, for local workflow testing)
-# brew install act  # macOS
-# choco install act-cli  # Windows
-
-# Test a workflow
-act -l  # list workflows
-act pull_request -n  # dry run
-```
-
-### Testing Examples
-For HTML/CSS/JS examples in `examples/`:
-- Open `index.html` directly in a browser
-- No build step or server required
-- Examples are offline-first (no networking)
-
-## Testing & Validation
-
-- Test workflows locally when possible using `act` or similar tools
-- For web-based examples (like mirc-ui-mock), test by opening in browser
-- No networking or storage for offline-first examples
-- Keep test data free of secrets, hostnames, or personal data
-- Validate YAML syntax before committing workflows
-
-## License
-
-Code is licensed under MPL-2.0. See LICENSE file for details.
-Also review LISANCE.txt for the joy-sensitive licensing perspective.
-
-## Special Notes
-
-- Read ETHICS.md first (or last, or just feel it)
-- LISANCE.txt should be read from bottom to top
-- Respect the tentacles
-- Don't be mean
-- Merge only when the stars align
+**Languages/Technologies**: YAML (GitHub Actions workflows), JavaScript, HTML, CSS  
+**License**: MPL-2.0  
+**No build tools**: This repo has no package.json, no bundlers, no compiled assets.
 
 ---
 
-*BLEKKSPRUT does not exist to be cloned. It exists to be experienced.*
+## Build, Test & Validation Commands
+
+**This repository has no build step.** There is no `npm install`, `npm run build`, or compilation required.
+
+### Validating YAML Workflow Files
+
+Always validate YAML syntax before committing workflow changes:
+```bash
+# Check YAML syntax (note: some line-length warnings are expected)
+yamllint .github/workflows/*.yml
+
+# The repo has existing line-length issues; focus on syntax errors, not warnings
+```
+
+### Validating JavaScript
+
+For JavaScript files in `examples/mirc-ui-mock/`:
+```bash
+node --check examples/mirc-ui-mock/app.js
+```
+
+### Testing HTML/CSS/JS Examples
+
+Open `examples/mirc-ui-mock/index.html` directly in a browser. The mock is:
+- Fully offline (no networking, no storage)
+- State lives only in memory until page reload
+- Lock icon is decorative only (no actual encryption)
+
+### Validating GitHub Actions Workflows
+
+Workflows cannot be tested locally without external tools. They run on:
+- `pull_request_target` events in GitHub
+- The reusable workflow `.github/workflows/cla-mark.yml` is called by `.github/workflows/cla.yml`
+
+---
+
+## Project Layout
+
+```
+.github/
+├── workflows/
+│   ├── cla-mark.yml           # Reusable CLA workflow (implementation)
+│   └── cla.yml                # Active workflow that calls cla-mark.yml
+├── PULL_REQUEST_TEMPLATE.md   # PR template with ethics/security checklists
+└── copilot-instructions.md    # This file
+
+examples/
+└── mirc-ui-mock/              # Static mIRC-style chat UI mock
+    ├── index.html             # Entry point - open in browser
+    ├── app.js                 # UI logic (vanilla JS, no dependencies)
+    ├── styles.css             # Styling with light/dark theme support
+    └── README.md              # Usage instructions for the mock
+
+workflows/
+└── cla.yml                    # Example workflow caller
+
+Root files:
+├── cla.yml                    # Another example CLA workflow caller
+├── ETHICS.md                  # Ethics policy (MUST comply with this)
+├── LICENSE                    # MPL-2.0 license text
+├── LISANCE.txt                # Creative licensing document
+└── README.md                  # Repository introduction
+```
+
+---
+
+## Key Workflow: CLA Marker
+
+The main functionality is the CLA workflow in `.github/workflows/cla-mark.yml`:
+
+**Inputs** (all optional with defaults):
+- `label_covered`: Label for CLA-covered PRs (default: "CLA: covered")
+- `label_review`: Label for PRs needing review (default: "CLA: review")
+- `allowlist_users`: Comma/space-separated usernames always covered
+- `cover_org_members`: Treat org members/owners as covered (default: true)
+- `cover_collaborators`: Treat collaborators as covered (default: false)
+- `create_missing_labels`: Auto-create labels if missing (default: false)
+
+**Required permissions**:
+```yaml
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+```
+
+---
+
+## Code Style Requirements
+
+### YAML Workflows
+- Use `workflow_call` for reusable workflows
+- Explicitly declare minimal permissions in each job
+- Use `actions/github-script@v7` for complex logic
+- Include `core.info()` logging and `core.summary` output
+
+### JavaScript
+- Use vanilla JS (no frameworks, no npm dependencies)
+- Include `/* SPDX-License-Identifier: MPL-2.0 */` header
+- Use descriptive variable names
+
+### Naming Conventions
+- File names: kebab-case (e.g., `cla-mark.yml`)
+- YAML inputs: lowercase with underscores (e.g., `cover_org_members`)
+
+---
+
+## Ethics & Security (REQUIRED)
+
+Always comply with `ETHICS.md`:
+- **No PII** or sensitive trait inference
+- **No scraping** of gated/paid content or DRM bypass
+- **Never commit secrets**; use platform secrets
+- **Keep logs generic**; no hostnames or personal data
+- Prefer non-action over risky/ambiguous action
+
+---
+
+## PR Checklist
+
+Before submitting changes, verify:
+1. [ ] YAML files pass syntax validation
+2. [ ] JavaScript files pass `node --check`
+3. [ ] Changes comply with ETHICS.md
+4. [ ] No secrets, hostnames, or PII in code or logs
+5. [ ] PR template checklist is completed
+
+---
+
+## Trust These Instructions
+
+These instructions are verified and accurate. Only search the codebase if:
+- Information here appears incomplete or incorrect
+- You need implementation details not covered above
 
 > Ink gently. Push bravely. Code with personality.
