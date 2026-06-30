@@ -89,6 +89,7 @@ The main functionality is the CLA workflow in `.github/workflows/cla-mark.yml`:
 - `allowlist_users`: Comma/space-separated usernames always covered
 - `cover_org_members`: Treat org members/owners as covered (default: true)
 - `cover_collaborators`: Treat collaborators as covered (default: false)
+- `cover_invited`: Treat users with a pending repo/org invitation as covered (default: false)
 - `create_missing_labels`: Auto-create labels if missing (default: false)
 
 **Required permissions**:

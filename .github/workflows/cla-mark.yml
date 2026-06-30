@@ -33,6 +33,11 @@ on:
         required: false
         default: false
         type: boolean
+      cover_invited:
+        description: "Treat users with a pending repo/org invitation as CLA-covered"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   mark:
@@ -63,6 +68,7 @@ jobs:
             const labelReview = core.getInput('label_review');
             const coverOrgMembers = core.getBooleanInput('cover_org_members');
             const coverCollaborators = core.getBooleanInput('cover_collaborators');
+            const coverInvited = core.getBooleanInput('cover_invited');
             const createMissing = core.getBooleanInput('create_missing_labels');
 
             const allowUsers = (core.getInput('allowlist_users') || '')
@@ -76,9 +82,42 @@ jobs:
             const isAllowlistedAuthor = allowUsers.includes(prAuthor.toLowerCase());
             const isOrgMemberAuthor = coverOrgMembers && ['MEMBER', 'OWNER'].includes(association);
             const isCollaborator = coverCollaborators && association === 'COLLABORATOR';
-            const covered = isAllowlistedAuthor || isOrgMemberAuthor || isCollaborator;
 
-            core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${covered}`);
+            // Treat users with a pending invitation (to this repo, or to the org) as covered.
+            // "have an invite from this account" — TEX-23.
+            async function hasPendingInvite(login) {
+              if (!login) return false;
+              const wanted = login.toLowerCase();
+              try {
+                const repoInvites = await github.paginate(
+                  github.rest.repos.listInvitations,
+                  { owner, repo, per_page: 100 }
+                );
+                if (repoInvites.some((i) => (i.invitee?.login || '').toLowerCase() === wanted)) {
+                  return true;
+                }
+              } catch (err) {
+                core.warning(`Could not list repo invitations: ${err.message}`);
+              }
+              try {
+                const orgInvites = await github.paginate(
+                  github.rest.orgs.listPendingInvitations,
+                  { org: owner, per_page: 100 }
+                );
+                if (orgInvites.some((i) => (i.login || '').toLowerCase() === wanted)) {
+                  return true;
+                }
+              } catch (err) {
+                // Owner may be a user account (no org); that's fine — just skip.
+                core.info(`Skipping org invitation check: ${err.message}`);
+              }
+              return false;
+            }
+
+            const isInvited = coverInvited && await hasPendingInvite(prAuthor);
+            const covered = isAllowlistedAuthor || isOrgMemberAuthor || isCollaborator || isInvited;
+
+            core.info(`PR #${issue_number} by @${prAuthor} (association=${association}, invited=${isInvited}) -> covered=${covered}`);
 
             // Ensure labels exist (create if missing)
             if (createMissing) {
@@ -124,6 +163,8 @@ jobs:
                 ['Association', association || ''],
                 ['Allowlisted users', allowUsers.join(', ') || '(none)'],
                 ['Treat org members as covered', String(coverOrgMembers)],
+                ['Treat invited users as covered', String(coverInvited)],
+                ['Pending invite found', String(isInvited)],
                 ['Result', covered ? labelCovered : labelReview],
               ])
               .write();
