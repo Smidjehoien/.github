@@ -1,0 +1,1 @@
+Thanks for this draft! We're consolidating the naming refactors into PR #35, which has more comprehensive coverage across all workflows and the UI mock. Since this is still in draft and #35 is more complete, I'm closing this to reduce clutter. Feel free to reference the final naming conventions from #35 if you need them for other work.
