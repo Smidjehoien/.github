@@ -1,0 +1,1 @@
+Thanks for this refactor! We've decided to consolidate all the naming improvements into a single PR to avoid merge conflicts. PR #35 includes this work plus comprehensive refactoring of the three workflows (`astral-clearance.yml`, `cla-mark.yml`, `library-cat.yml`). I'm closing this in favor of #35 to keep the history clean.
