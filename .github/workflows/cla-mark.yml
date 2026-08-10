@@ -63,9 +63,9 @@ jobs:
             const labelReview = core.getInput('label_review');
             const coverOrgMembers = core.getBooleanInput('cover_org_members');
             const coverCollaborators = core.getBooleanInput('cover_collaborators');
-            const createMissing = core.getBooleanInput('create_missing_labels');
+            const shouldCreateMissingLabels = core.getBooleanInput('create_missing_labels');
 
-            const allowUsers = (core.getInput('allowlist_users') || '')
+            const allowlistedUsernames = (core.getInput('allowlist_users') || '')
               .split(/[\s,]+/)
               .filter(Boolean)
               .map((s) => s.toLowerCase());
@@ -73,15 +73,15 @@ jobs:
             const prAuthor = (pr.user && pr.user.login) ? pr.user.login : '';
             const association = (pr.author_association || '').toUpperCase();
 
-            const isAllowlistedAuthor = allowUsers.includes(prAuthor.toLowerCase());
+            const isAllowlistedAuthor = allowlistedUsernames.includes(prAuthor.toLowerCase());
             const isOrgMemberAuthor = coverOrgMembers && ['MEMBER', 'OWNER'].includes(association);
             const isCollaborator = coverCollaborators && association === 'COLLABORATOR';
-            const covered = isAllowlistedAuthor || isOrgMemberAuthor || isCollaborator;
+            const isClaCovered = isAllowlistedAuthor || isOrgMemberAuthor || isCollaborator;
 
-            core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${covered}`);
+            core.info(`PR #${issue_number} by @${prAuthor} (association=${association}) -> covered=${isClaCovered}`);
 
             // Ensure labels exist (create if missing)
-            if (createMissing) {
+            if (shouldCreateMissingLabels) {
               async function ensureLabel(name, color, description) {
                 try {
                   await github.rest.issues.getLabel({ owner, repo, name });
@@ -101,20 +101,20 @@ jobs:
             }
 
             // Remove the opposite label if present, then add the desired one
-            const desired = covered ? labelCovered : labelReview;
-            const other = covered ? labelReview : labelCovered;
+            const desiredLabel = isClaCovered ? labelCovered : labelReview;
+            const oppositeLabel = isClaCovered ? labelReview : labelCovered;
 
-            // remove other label if present
+            // remove opposite label if present
             try {
-              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: other });
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: oppositeLabel });
             } catch (err) {
               if (err.status !== 404) {
-                core.warning(`Could not remove label '${other}': ${err.message}`);
+                core.warning(`Could not remove label '${oppositeLabel}': ${err.message}`);
               }
             }
 
             // add desired label (idempotent)
-            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [desired] });
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [desiredLabel] });
 
             core.summary
               .addHeading('CLA marker')
@@ -122,8 +122,8 @@ jobs:
                 [{data: 'PR', header: true}, {data: '#'+issue_number, header: false}],
                 ['Author', '@'+prAuthor],
                 ['Association', association || ''],
-                ['Allowlisted users', allowUsers.join(', ') || '(none)'],
+                ['Allowlisted users', allowlistedUsernames.join(', ') || '(none)'],
                 ['Treat org members as covered', String(coverOrgMembers)],
-                ['Result', covered ? labelCovered : labelReview],
+                ['Result', isClaCovered ? labelCovered : labelReview],
               ])
               .write();

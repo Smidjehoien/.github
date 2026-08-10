@@ -1,0 +1,93 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+early_access: false
+
+tone_instructions: |
+  Be warm and constructive. This repo values creative documentation and
+  ethical guardrails (see ETHICS.md). Flag any pattern that could profile,
+  target, or collect PII. Respect the project's poetic voice—don't flatten
+  personality in docs or comments. Keep feedback concise and actionable.
+
+reviews:
+  profile: "chill"
+  high_level_summary: true
+  collapse_walkthrough: true
+  sequence_diagrams: false
+  poem: true
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    ignore_title_keywords:
+      - "WIP"
+      - "wip"
+      - "draft"
+  path_filters:
+    - "!**/*.pdf"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.gif"
+    - "!**/*.svg"
+  path_instructions:
+    - path: ".github/workflows/**/*.yml"
+      instructions: |
+        Review GitHub Actions workflows for:
+        - Permissions are set to least privilege (contents: read, etc.)
+        - Actions are pinned to major versions (e.g. @v7), not @latest
+        - No secrets or hostnames appear in logs (ETHICS.md compliance)
+        - workflow_call inputs have clear descriptions and sensible defaults
+        - Consistent use of actions/github-script@v7 patterns
+    - path: "**/*.md"
+      instructions: |
+        This repo uses creative, poetic documentation on purpose. Do not
+        suggest removing personality, metaphors, or emojis unless they
+        cause genuine confusion. Check links and formatting, but respect
+        the voice.
+    - path: "**/*.js"
+      instructions: |
+        Review JavaScript for:
+        - No networking, storage, or external calls (examples are offline-first)
+        - No PII or secrets in sample data (ETHICS.md compliance)
+        - Accessibility: proper ARIA attributes and keyboard support
+        - DOM safety: prefer textContent over innerHTML where possible
+    - path: "**/*.css"
+      instructions: |
+        Check CSS for accessibility (contrast, focus styles, reduced-motion
+        support) and consistency with existing design tokens.
+    - path: "**/*.html"
+      instructions: |
+        Check HTML for semantic structure, accessibility (ARIA labels,
+        lang attribute), and that no external resources are loaded
+        (offline-first requirement).
+    - path: "ETHICS.md"
+      instructions: |
+        This is the governing ethics policy. Changes must preserve the
+        core principles: non-targeting, consent-driven, data minimization,
+        conservative posture, and no scraping.
+  tools:
+    yamllint:
+      enabled: true
+    markdownlint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    actionlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    languagetool:
+      enabled: true
+      level: "default"
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "ETHICS.md"
+      - "README.md"
+      - ".github/copilot-instructions.md"

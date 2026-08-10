@@ -18,23 +18,23 @@
   const nickColorCache = new Map();
   const nickColorClass = (nick) => {
     if (!nickColorCache.has(nick)) {
-      const idx = Math.abs(hash(nick)) % 6; // 0..5
-      nickColorCache.set(nick, nickColors[idx]);
+      const colorIndex = Math.abs(hash(nick)) % 6; // 0..5
+      nickColorCache.set(nick, nickColors[colorIndex]);
     }
     return nickColorCache.get(nick);
   };
 
   // Simple hash for color bucketing
   function hash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    return h;
+    let hashValue = 0;
+    for (let i = 0; i < str.length; i++) hashValue = ((hashValue << 5) - hashValue + str.charCodeAt(i)) | 0;
+    return hashValue;
   }
 
   // In-memory message store per channel
   /** @type {Record<string, {time:number,nick:string,text:string}[]>} */
   const store = Object.fromEntries(
-    channels.map((c) => [c, []])
+    channels.map((channelName) => [channelName, []])
   );
 
   // Seed a few messages in #general
@@ -49,10 +49,10 @@
   // Event: send message on Enter
   $('#composer').addEventListener('submit', (e) => {
     e.preventDefault();
-    const val = inputEl.value.trim();
-    if (!val) return;
+    const messageText = inputEl.value.trim();
+    if (!messageText) return;
     const chan = currentChannel();
-    push(chan, 'you', val);
+    push(chan, 'you', messageText);
     inputEl.value = '';
     renderLog(chan);
     scrollLogToBottom();
@@ -93,14 +93,14 @@
     } else {
       // Initial render or channel list changed
       channelListEl.innerHTML = '';
-      channels.forEach((c) => {
+      channels.forEach((channelName) => {
         const li = document.createElement('li');
-        li.dataset.value = c;
-        if (c === active) li.classList.add('active');
+        li.dataset.value = channelName;
+        if (channelName === active) li.classList.add('active');
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.textContent = c;
-        btn.addEventListener('click', () => switchChannel(c));
+        btn.textContent = channelName;
+        btn.addEventListener('click', () => switchChannel(channelName));
         li.appendChild(btn);
         channelListEl.appendChild(li);
       });
@@ -109,13 +109,13 @@
 
   function renderUsers(nicks) {
     userListEl.innerHTML = '';
-    nicks.forEach((n) => {
+    nicks.forEach((nickname) => {
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.type = 'button';
       const span = document.createElement('span');
-      span.className = nickColorClass(n);
-      span.textContent = n;
+      span.className = nickColorClass(nickname);
+      span.textContent = nickname;
       btn.appendChild(span);
       li.appendChild(btn);
       userListEl.appendChild(li);
@@ -140,7 +140,7 @@
     if (currentChan !== chan) {
       logEl.innerHTML = '';
       logEl.dataset.channel = chan;
-      msgs.forEach((m) => logEl.appendChild(renderMsg(m)));
+      msgs.forEach((message) => logEl.appendChild(renderMsg(message)));
     } else {
       // Incremental update: only add new messages
       // Safe because messages are append-only and DOM is not modified elsewhere
@@ -153,20 +153,20 @@
     }
   }
 
-  function renderMsg(m) {
+  function renderMsg(message) {
     const row = document.createElement('div');
     row.className = 'msg';
     const time = document.createElement('div');
-    const hh = new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedTime = new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     time.className = 'time';
-    time.textContent = hh;
+    time.textContent = formattedTime;
     const body = document.createElement('div');
     const nick = document.createElement('span');
-    nick.className = `nick ${nickColorClass(m.nick)}`;
-    nick.textContent = padNick(m.nick);
+    nick.className = `nick ${nickColorClass(message.nick)}`;
+    nick.textContent = padNick(message.nick);
     const text = document.createElement('span');
     text.className = 'text';
-    text.textContent = m.text;
+    text.textContent = message.text;
     body.appendChild(nick);
     body.appendChild(document.createTextNode(': '));
     body.appendChild(text);
@@ -175,16 +175,16 @@
     return row;
   }
 
-  function padNick(n) {
+  function padNick(nick) {
     // mimic fixed-width nick column feel
-    const max = 8; // simple pad for aesthetics
-    if (n.length >= max) return n.slice(0, max);
-    return (n + ' '.repeat(max)).slice(0, max);
+    const maxNickLength = 8; // simple pad for aesthetics
+    if (nick.length >= maxNickLength) return nick.slice(0, maxNickLength);
+    return (nick + ' '.repeat(maxNickLength)).slice(0, maxNickLength);
   }
 
   function push(chan, nick, text) {
-    const arr = store[chan] || (store[chan] = []);
-    arr.push({ time: Date.now(), nick, text });
+    const channelMessages = store[chan] || (store[chan] = []);
+    channelMessages.push({ time: Date.now(), nick, text });
   }
 
   function scrollLogToBottom() {

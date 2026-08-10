@@ -24,11 +24,11 @@ jobs:
             const owner = context.repo.owner
             const repo = context.repo.repo
             const issue_number = context.issue.number
-            const body = context.payload.comment.body.trim()
-            const assoc = (context.payload.comment.author_association || '').toUpperCase()
+            const commentBody = context.payload.comment.body.trim()
+            const authorAssociation = (context.payload.comment.author_association || '').toUpperCase()
 
-            const allowed = ['OWNER','MEMBER','COLLABORATOR']
-            if (!allowed.includes(assoc)) {
+            const allowedAssociations = ['OWNER','MEMBER','COLLABORATOR']
+            if (!allowedAssociations.includes(authorAssociation)) {
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Only members/collaborators can use /astral.' })
               return
             }
@@ -47,12 +47,12 @@ jobs:
             }
             await ensureLabel(label, 'b497e7', 'Extra review requested')
 
-            const on = /\b(on|true|yes|enable)\b/i.test(body)
-            const off = /\b(off|false|no|disable)\b/i.test(body)
-            if (on) {
+            const shouldEnableClearance = /\b(on|true|yes|enable)\b/i.test(commentBody)
+            const shouldDisableClearance = /\b(off|false|no|disable)\b/i.test(commentBody)
+            if (shouldEnableClearance) {
               await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] })
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Astral clearance: on.' })
-            } else if (off) {
+            } else if (shouldDisableClearance) {
               try { await github.rest.issues.removeLabel({ owner, repo, issue_number, name: label }) } catch {}
               await github.rest.issues.createComment({ owner, repo, issue_number, body: 'Astral clearance: off.' })
             } else {
